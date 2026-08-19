@@ -1,87 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body, html { margin: 0; padding: 0; min-height: 100%; font-family: 'Segoe UI', Arial, sans-serif; color: #2b2b2b; }
-  .search-container { width: 100%; max-width: 750px; margin: 0 auto; box-sizing: border-box; padding: 15px; }
-  
-  /* Khung lưu ý cảnh báo cho trang SBD */
-  .warning-box { text-align: center; color: #d90429; font-size: 15px; font-weight: 500; line-height: 1.6; margin-bottom: 10px; padding: 10px; background-color: #fff3f5; border: 1px solid #fbc4cb; border-radius: 8px; }
-  .warning-title { font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; color: #b7094c; }
-  .warning-detail { display: block; text-align: left; margin-bottom: 6px; }
-  .warning-detail:last-child { margin-bottom: 0; }
-
-  /* Bố cục hàng ngang tối ưu kích thước */
-  .search-row { display: flex; gap: 15px; width: 100%; align-items: center; margin-bottom: 5px; }
-  
-  /* ĐÃ SỬA: Đưa chiều cao về 60px !important trên PC để vừa vặn với cỡ chữ 22px */
-  .search-input { flex: 1; padding: 5px 15px; border: 2px solid #0056b3; border-radius: 6px; box-sizing: border-box; font-size: 22px !important; font-weight: bold !important; height: 60px !important; color: #111; outline: none; }
-  .search-input:focus { border-color: #004085; box-shadow: 0 0 5px rgba(0,86,179,0.3); }
-  .search-input::placeholder { font-weight: normal; font-size: 15px; color: #777; }
-  
-  /* Nút bấm Xem SBD trên máy tính: Nhỏ gọn, thấp hơn ô nhập liệu */
-  .search-button { width: 140px; height: 38px !important; background-color: green; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; text-transform: uppercase; white-space: nowrap; box-sizing: border-box; transition: all 0.2s ease; }
-  .search-button:hover { background-color: #004085; }
-  .search-button:disabled { background-color: #6c757d; cursor: not-allowed; }
-  
-  /* Thông báo trạng thái hệ thống */
-  #msg { margin-top: 5px; font-weight: 600; line-height: 1.2; text-align: center; font-size: 15px; }
-  
-  /* Khu vực hiển thị kết quả */
-  #result { display: none; text-align: left; margin-top: 5px; border-top: 2px dashed #e0e0e0; padding-top: 20px; font-size: 16px; line-height: 1.6; width: 100%; }
-  #result p { margin: 10px 0; border-bottom: 1px solid #f4f4f4; padding-bottom: 3px; color: #4a4a4a; }
-  #result p:last-of-type { border-bottom: none; }
-  
-  /* Làm nổi bật các thành phần thông tin SBD */
-  .highlight-blue { color: #0056b3; font-weight: 700; font-size: 17px; }
-  .highlight-dark { color: #111; font-weight: 600; }
-  .highlight-green { color: #1e7e34; font-weight: 700; }
-  .highlight-sbd { color: #d90429; font-weight: 900; font-size: 24px; }
-  
-  /* Khung quy trình thi & ghi chú bổ sung nếu có */
-  .info-heading { color: #0056b3; font-weight: 700; text-align: center; margin: 15px 0 10px 0; font-size: 15px; display: block; letter-spacing: 0.5px; }
-  #resGhiChu { white-space: pre-line; color: #333; font-weight: 500; font-size: 14.5px; line-height: 1.6; background-color: #f8f9fa; padding: 12px; border-left: 4px solid #0056b3; border-radius: 0 6px 6px 0; margin-top: 5px; }
-
-  /* GIAO DIỆN DI ĐỘNG: Ép kích thước không bị bé */
-  @media (max-width: 550px) {
-    .search-row { flex-direction: column; gap: 12px; align-items: stretch; }
-    .search-input { width: 100% !important; height: 60px !important; font-size: 22px !important; font-weight: bold !important; }
-    .search-button { width: 100% !important; height: 45px !important; font-size: 15px; } 
-    .warning-box { font-size: 14px; padding: 12px; }
-    .warning-title { font-size: 16px; }
-  }
-</style>
-</head>
-<body>
-
-<div class="search-container">
-  <div class="warning-box">
-    <span class="warning-title">TRA CỨU SỐ BÁO DANH VÀ THÔNG TIN - KỲ THI 25/08/2026</span>
-    <span class="warning-title">THÍ SINH LƯU Ý</span>
-    <span class="warning-detail">_ Thí sinh kiểm tra chính xác <strong>Số báo danh (SBD)</strong> và <strong>Phòng thi</strong> của mình.</span>
-    <span class="warning-detail" style="margin-top: 4px;">_ Có mặt tại địa điểm thi theo giờ đã xếp, mang theo CCCD bản chính và các giấy tờ liên quan.</span>
-  </div>
-
-  <div class="search-row">
-    <input type="text" id="cccdInput" class="search-input" placeholder="Nhập số Căn cước hoặc số hộ chiếu của thí sinh">
-    <button id="submitBtn" class="search-button">Xem SBD</button>
-  </div>
-  
-  <div id="msg"></div>
-  
-  <div id="result">
-    <p>Họ và tên: <strong id="resHoTen" class="highlight-blue"></strong></p>
-    <p>Ngày sinh: <strong id="resNgaySinh" class="highlight-dark"></strong></p>
-    <p>Số Căn cước: <strong id="resCCCD" class="highlight-dark"></strong></p>
-    <p>GPLX đã có: <strong id="resHangXe" class="highlight-green"></strong></p>
-    <p>Số báo danh (SBD): <strong id="resSBD" class="highlight-sbd"></strong></p>
-    
-    <span class="info-heading">THÔNG TIN PHÒNG THI & LƯU Ý</span>
-    <div id="resGhiChu"></div>
-  </div>
-</div>
-
 <script>
 document.getElementById('submitBtn').addEventListener('click', function() {
   var cccd = document.getElementById('cccdInput').value.trim();
@@ -146,7 +62,12 @@ document.getElementById('submitBtn').addEventListener('click', function() {
       console.error("Lỗi kết nối:", error);
     });
 });
-</script>
 
-</body>
-</html>
+// THÊM ĐOẠN NÀY ĐỂ HỖ TRỢ BẤM ENTER
+document.getElementById('cccdInput').addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault(); // Ngăn chặn hành vi mặc định (nếu có)
+    document.getElementById('submitBtn').click(); // Kích hoạt sự kiện click của nút
+  }
+});
+</script>
